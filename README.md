@@ -1,4 +1,4 @@
-# ROBOCON 2026 足式机器人（一队）
+# ROBOCON 2026 足式机器人
 
 <p align="center">
   <img src="https://img.shields.io/badge/ROBOCON-2026%20Season-red?style=flat-square" alt="ROBOCON 2026">

@@ -1,0 +1,13 @@
+﻿# clangd 配置：C++17 + Eigen3 include 路径
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -D_GNU_SOURCE
+    - -D_USE_MATH_DEFINES
+    - -Wno-unknown-pragmas
+    - -I/home/rum/桌面/robot/12并联力控/legged_control/legged/src/parallel/include
+    - -I/usr/include/eigen3
+
+Diagnostics:
+  Suppress:
+    - -Wunused-includes

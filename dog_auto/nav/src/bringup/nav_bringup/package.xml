@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>nav_bringup</name>
+  <version>0.1.0</version>
+  <description>MID360 导航总入口: 建图(自动保存点云+栅格图) / 重定位 / 路径规划 / 导航 的统一 launch 与工具</description>
+  <maintainer email="xiaocheng@todo.todo">xiaocheng</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- build_type ament_python 已在 <export> 声明,无需 buildtool_depend(ament_python 随 ROS 提供,rosdep 无独立 key) -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+
+  <!-- 运行期依赖的功能包 (launch 会拉起) -->
+  <exec_depend>livox_ros_driver2</exec_depend>
+  <exec_depend>point_lio</exec_depend>
+  <exec_depend>small_gicp_relocalization</exec_depend>
+  <exec_depend>sensor_scan_generation</exec_depend>
+  <exec_depend>pb2025_nav_bringup</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

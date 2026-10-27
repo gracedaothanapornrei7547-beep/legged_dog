@@ -1,0 +1,69 @@
+cmake_minimum_required(VERSION 3.11)
+project(small_gicp_relocalization)
+
+## Use C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+## By adding -Wall and -Werror, the compiler does not ignore warnings anymore,
+## enforcing cleaner code.
+# add_definitions(-Wall -Werror)
+
+## Export compile commands for clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+#######################
+## Find dependencies ##
+#######################
+
+find_package(ament_cmake_auto REQUIRED)
+find_package(OpenMP REQUIRED)
+ament_auto_find_build_dependencies()
+
+# Add small_gicp dependency —— 已 vendored 到 third_party/small_gicp。
+# FETCHCONTENT_SOURCE_DIR_<NAME> 让 FetchContent 直接用本地源码、不再联网克隆,
+# 离线/弱网设备也能 build(原 GIT_REPOSITORY 仅作来源记录)。
+include(FetchContent)
+set(FETCHCONTENT_SOURCE_DIR_SMALL_GICP ${CMAKE_CURRENT_SOURCE_DIR}/third_party/small_gicp)
+fetchcontent_declare(
+  small_gicp
+  GIT_REPOSITORY https://github.com/koide3/small_gicp.git
+  GIT_TAG "master"
+)
+fetchcontent_makeavailable(small_gicp)
+
+###########
+## Build ##
+###########
+
+ament_auto_add_library(${PROJECT_NAME} SHARED
+  DIRECTORY src
+)
+
+target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX small_gicp)
+
+rclcpp_components_register_node(${PROJECT_NAME}
+  PLUGIN small_gicp_relocalization::SmallGicpRelocalizationNode
+  EXECUTABLE ${PROJECT_NAME}_node
+)
+
+#############
+## Testing ##
+#############
+
+if(BUILD_TESTING)
+  set(ament_cmake_clang_format_CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-format")
+  set(ament_cmake_clang_tidy_CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy")
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+#############
+## Install ##
+#############
+
+ament_auto_package(
+  USE_SCOPED_HEADER_INSTALL_DIR
+  INSTALL_TO_SHARE
+  launch
+)

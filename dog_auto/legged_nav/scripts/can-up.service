@@ -1,0 +1,16 @@
+[Unit]
+Description=Bring up CAN interfaces (can0..3) with restart-ms 100 + txqueuelen 1000
+# 等 USB 设备枚举完成（gs_usb 适配器走 USB），但在 multi-user 之前完成
+After=systemd-udev-settle.service usb.target
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# 重要：脚本要装到 /usr/local/bin/setup-can.sh 并 chmod +x
+ExecStart=/usr/local/bin/setup-can.sh
+# 启动失败不让系统挂；记 journal 即可
+SuccessExitStatus=0 1
+
+[Install]
+WantedBy=multi-user.target

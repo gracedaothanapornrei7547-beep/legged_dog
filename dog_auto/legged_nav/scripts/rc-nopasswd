@@ -1,0 +1,15 @@
+# /etc/sudoers.d/rc-nopasswd
+#
+# 用户 rc 全部 sudo 命令免密码。dog 是开发用 robot，开发流程中需要频繁
+# sudo ip link / sudo systemctl，免密能避免输密码卡住主流程。
+#
+# 装法（由 install-can-up.sh 自动做）：
+#   sudo install -m 0440 rc-nopasswd /etc/sudoers.d/rc-nopasswd
+#
+# 卸载：
+#   sudo rm /etc/sudoers.d/rc-nopasswd
+#
+# 安全说明：rc 可以无密码做任何 sudo 操作。仅适合受信任的内网开发环境
+# （这台 N150 mini-PC 只是装机器人的，不对外）。如果要对生产部署 LOCK
+# DOWN，把下面这行删掉换成 specific 命令白名单。
+rc ALL=(ALL) NOPASSWD: ALL

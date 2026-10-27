@@ -1,0 +1,33 @@
+# /etc/udev/rules.d/70-candlelight-can.rules
+# 按 USB 物理口锁 candleLight (gs_usb 1d50:606f) 到固定 can 名。
+# Generated: 2026-05-30
+#
+# 物理布局 (硬件不变,can 名跟物理口绑死):
+#   板 A (USB hub @ 3-2):
+#     3-2.1 -> can2  (空)
+#     3-2.2 -> can3  (空)
+#     3-2.3 -> can6  BL
+#     3-2.4 -> can7  BR
+#   板 B (USB hub @ 3-1):
+#     3-1.1 -> can0  FR
+#     3-1.2 -> can1  FL
+#     3-1.3 -> can4  (空)
+#     3-1.4 -> can5  (空)
+#
+# 为什么不用 serial: 板子换 / candleLight 换块新的,serial 变,但只要插同一个物理口,
+# can 名不变。USB hub 内部口顺序由 hub 固件保证,rmmod/modprobe/reboot 后 KERNELS=="3-x.x"
+# 始终命中同一个物理插槽。前提: 主板上接两块板的 USB-A 口不动 (否则 3-1 / 3-2 会变)。
+#
+# 注: 不放兜底 fallback 规则。systemd-udev 对 NAME= 是 "最后一条匹配赢",
+# 兜底放最后会顶掉 per-port 锁名 (实测 2026-05-30 踩过坑)。
+# 万一插入第 9 块板,kernel 会给它 default canN,不会撞 can0..can7 因为 8 个名都被锁了。
+
+# 2026-07-02 7845HS 实测(can_scan): 板A@USB hub 1-3, 板B@1-4;电机口 1-3.3/1-3.4/1-4.3/1-4.4
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-3.1", NAME="can0"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-3.2", NAME="can1"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-3.3", NAME="can2"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-3.4", NAME="can3"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-4.1", NAME="can4"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-4.2", NAME="can5"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-4.3", NAME="can6"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", KERNELS=="1-4.4", NAME="can7"

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>cmd_vel_guard</name>
+  <version>0.1.0</version>
+  <description>
+    nav 侧安全带节点: 夹在 fake_vel_transform 与 cmd_bridge(狗接口)之间。
+    对 /cmd_vel 做速度硬钳(vx/vy/ω 越界即钳, NaN→0)+ 固定频率重发 + 上游超时归零。
+    解决 A(速度硬保证)与 B(抖动/定频), 并预留平移优先/急停等扩展位。
+  </description>
+  <maintainer email="angel@todo.todo">angel</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

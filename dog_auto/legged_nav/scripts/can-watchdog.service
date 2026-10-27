@@ -1,0 +1,17 @@
+[Unit]
+Description=CAN interface watchdog (keep can0..3 UP, never cycle)
+After=systemd-udev-settle.service usb.target
+Wants=systemd-udev-settle.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/local/bin/setup-can.sh
+ExecStart=/usr/local/bin/can-watchdog.sh
+Restart=always
+RestartSec=3
+# 日志走 journal，看：journalctl -u can-watchdog.service -f
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

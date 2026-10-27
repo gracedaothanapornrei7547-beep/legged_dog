@@ -1,0 +1,10 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -D_GNU_SOURCE
+    - -D_USE_MATH_DEFINES
+    - -Wno-unknown-pragmas
+
+Diagnostics:
+  Suppress:
+    - -Wunused-includes

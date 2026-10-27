@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>legged_nav_ros</name>
+  <version>0.1.0</version>
+  <description>任务赛 nav ROS2 层: cmd_bridge(/cmd_vel→共享内存) + sbus_teleop(遥控器→/cmd_vel)。狗 RT 二进制(legged_nav)进程隔离, 只读 shm 不碰 DDS。</description>
+  <maintainer email="rc@example.com">rc</maintainer>
+  <license>Proprietary</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+
+  <exec_depend>ros2launch</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

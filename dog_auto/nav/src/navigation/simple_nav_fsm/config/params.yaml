@@ -1,0 +1,55 @@
+# ===== 哨兵/小车平台导航参数 (simple_nav_fsm) =====
+# 默认值: 速度上限 0.4m/s, wz_max 0.8 rad/s, 适配全向轮底盘。
+# 狗平台请用 config/params_dog.yaml。
+# 导航策略: Y → X → Yaw 逐轴顺序校准
+simple_nav_fsm:
+  ros__parameters:
+    # ---------- 框架 / 接口 ----------
+    map_frame: map
+    base_frame: base_footprint
+    cmd_vel_topic: /cmd_vel_raw    # ★发到 guard 输入侧; 原 /cmd_vel 会绕过 guard
+    estop_topic: /nav_estop          # std_msgs/Bool，true = 急停
+    control_rate: 30.0               # Hz，状态机主循环
+    tf_timeout: 0.5                  # s，TF 新鲜度阈值。先用 tf2_monitor 看 map->base
+                                     # 实际延迟，阈值取其 2~3 倍
+    default_final_heading: true      # goal 未指明时是否做终点朝向
+
+    # ---------- 容差 / 到位判定 ----------
+    xy_tol: 0.04                     # m
+    yaw_tol_deg: 4.0                 # deg，必须大于 trot 抖动带(±2~3°)，否则边界横跳
+    settle_frames: 8                 # 连续 N 帧在容差内才算到位（30Hz 下约 0.27s）
+
+    # ---------- 主动轴增益（逼近目标）----------
+    kv: 0.8                          # vx/vy 主增益（比例减速）
+    v_max: 0.4                       # m/s，负载后建议先降到 0.25~0.3
+    v_min: 0.06                      # m/s，防止容差边界外无限龟速
+    vy_max: 0.12                     # m/s, Phase 1 (Y) 主动侧移上限
+    vy_min: 0.06                     # m/s
+    kp_rotate: 1.8                   # Phase 3 (YAW) 主动旋转增益
+    wz_max: 0.8                      # rad/s
+    wz_min: 0.15                     # rad/s，克服步态死区的最小转速
+
+    # ---------- 被动轴纠偏增益（冻结维持）----------
+    k_hold_pos: 0.5                  # xy 位置被动纠偏增益 (<< kv)
+    k_hold_yaw: 0.5                  # yaw 被动纠偏增益 (<< kp_rotate)
+    vx_hold_max: 0.1                 # m/s, vx 被动纠偏上限
+    vy_hold_max: 0.08                # m/s, vy 被动纠偏上限
+    wz_hold_max: 0.25                # rad/s, wz 被动纠偏上限
+
+    # ---------- 指令斜坡（加速度限幅）----------
+    acc_x: 0.5
+    acc_y: 0.5
+    acc_wz: 2.0
+
+    # ---------- 失败看门狗 ----------
+    progress_window: 3.0             # s
+    min_xy_progress: 0.05            # m/窗口，低于它 -> 无进展判失败
+    min_yaw_progress_deg: 3.0        # deg/窗口，低于它 -> 转向无进展判失败
+                                     #   （典型原因：body_posture 没让出 yaw 控制权）
+    x_timeout: 30.0                  # s, CALIBRATE_X 超时
+    y_timeout: 30.0                  # s, CALIBRATE_Y 超时
+    yaw_timeout: 25.0                # s, CALIBRATE_YAW 超时
+
+    # ---------- SAFETY_STOP ----------
+    recover_frames: 15               # 安全条件解除连续 N 帧才恢复（0.5s 防抖）
+    safety_abort_timeout: 20.0       # s，安全停超过这么久不恢复 -> 报失败给上层

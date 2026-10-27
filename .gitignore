@@ -1,0 +1,86 @@
+# ===== colcon / ROS / CMake 编译产物（顶层和任意子目录） =====
+build/
+install/
+log/
+.cache/
+devel/
+logs/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+*.cmake
+!CMakeLists.txt
+
+# ===== C/C++ 编译中间产物 =====
+*.o
+*.obj
+*.so
+*.so.*
+*.a
+*.lib
+*.dll
+*.dylib
+*.exe
+*.out
+*.app
+*.d
+*.gch
+*.pch
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+.eggs/
+*.pyo
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== 本地未规划入库的辅助模块 =====
+Robotic_arm/
+机械臂视觉/
+
+# ===== 日志/数据/录制（严禁入库） =====
+dog_auto/log/
+legged/log/
+*.bin
+*.log
+*.log.*
+trot.log
+*.bag
+*.bag.active
+*.mcap
+*.db3
+*.csv.tmp
+
+# ===== IDE / 编辑器 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===== Claude / 临时 =====
+.claude/
+*.tmp
+*.tmp.*
+*.bak
+*.orig
+
+# ===== 其他可能的本地配置 =====
+.env
+.env.local
+
+# ===== DM02 ekf-ref 重复 ARM 编译器参考工程(各~94M+重复CMSIS库), 不入库; 留 PDF/Readme/img =====
+DM02/ekf-ref/AC5/
+DM02/ekf-ref/AC6/

@@ -1,0 +1,4 @@
+Vendored from https://github.com/koide3/small_gicp
+Commit: 57c1106daf83c2c79ee0c58a9c7ed0032298ff4e (master, 2026-06)
+裁剪: 移除 .git/data/docs/docker(仅 tests/benchmarks 用,默认 OFF)。
+仅用于离线/弱网设备 build,避免 FetchContent 联网克隆。

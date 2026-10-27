@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.o
+*.so
+*.a
+build/
+install/
+log/
+.vscode/
+.idea/
+*.swp
+.cache/
+.DS_Store

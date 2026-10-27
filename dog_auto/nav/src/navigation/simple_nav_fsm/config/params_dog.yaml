@@ -1,0 +1,54 @@
+# ===== 狗平台导航参数 (simple_nav_fsm) =====
+# 匹配 cmd_vel_guard 的安全包络:
+#   vx_max=0.30, vy_max=0.2, w_max=0.6
+# 用法: ros2 launch simple_nav_fsm simple_nav.launch.py params_file:=params_dog.yaml
+# 导航策略: Y → X → Yaw 逐轴顺序校准
+simple_nav_fsm:
+  ros__parameters:
+    # ---------- 框架 / 接口 ----------
+    map_frame: map
+    base_frame: base_footprint
+    cmd_vel_topic: /cmd_vel_raw    # ★发到 guard 输入侧(guard 订 cmd_vel_raw / 发 cmd_vel); 原 /cmd_vel 会绕过 guard
+    estop_topic: /nav_estop
+    control_rate: 30.0
+    tf_timeout: 0.5
+    default_final_heading: true
+
+    # ---------- 容差 / 到位判定 ----------
+    xy_tol: 0.05                     # 比车略大: 狗步态抖动 + LiDAR 偏置
+    yaw_tol_deg: 5.0                 # 必须 > trot 抖动带(±2~3°), 防边界横跳
+    settle_frames: 15                   # ★加长静止确认, 防里程计抖动提前退出
+
+    # ---------- 主动轴增益（逼近目标）----------
+    kv: 0.8                            # ★提高主增益，更快收敛到目标
+    v_max: 0.30                      # ★匹配 guard vx_max=0.3
+    v_min: 0.06
+    vy_max: 0.20                     # ★匹配 guard vy_max=0.2
+    vy_min: 0.06
+    kp_rotate: 1.8                   # ★提高旋转增益
+    wz_max: 0.6                      # ★匹配 cmd_vel_guard w_max=0.6
+    wz_min: 0.15                     # 克服步态死区的最小转速
+
+    # ---------- 被动轴纠偏增益（冻结维持）----------
+    k_hold_pos: 1.0                  # ★加强: 侧向漂移更快拉回 (原0.7)
+    k_hold_yaw: 1.0                  # ★加强: yaw漂移更快拉回 (原0.5)
+    vx_hold_max: 0.10                # m/s, vx 被动纠偏上限
+    vy_hold_max: 0.20                # m/s, vy 被动纠偏上限 ★匹配 guard vy_max=0.2
+    wz_hold_max: 0.3                 # rad/s, wz 被动纠偏上限 ★加强 (原0.2)
+
+    # ---------- 指令斜坡 ----------
+    acc_x: 0.3                       # ★狗保护: 比哨兵更缓
+    acc_y: 0.5                       # ★侧移加速更快响应
+    acc_wz: 1.5
+
+    # ---------- 失败看门狗 ----------
+    progress_window: 3.0
+    min_xy_progress: 0.03            # ★狗步幅小, 进展阈值降低
+    min_yaw_progress_deg: 3.0
+    x_timeout: 30.0                  # s, CALIBRATE_X 超时
+    y_timeout: 40.0                  # ★狗侧移慢, 给更多时间
+    yaw_timeout: 25.0                # s, CALIBRATE_YAW 超时
+
+    # ---------- SAFETY_STOP ----------
+    recover_frames: 15
+    safety_abort_timeout: 30.0       # ★多给 10s 恢复时间

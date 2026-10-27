@@ -1,0 +1,15 @@
+# simple_dicision 路点映射配置
+# 将逻辑名称映射到 ~/.simple_nav_fsm_waypoints.yaml 中已打点的实际名称
+# 本文件路径通过 ROS 参数 waypoints_config 指定
+
+route:
+  # ---- 必经路径点 (test地图: t1→t2→t3 模拟直线) ----
+  start:    "1"        # 起始点（启动区 / entry）
+  grab:     "42"        # 抓取点（gap12 缝中站位 / gap12_back）
+  cross:    "52"        # 过减速带点（zone12_approach，减速带北侧）
+
+  # ---- 4个归位区放置点（颜色→区编号 0绿 1灰 2蓝 3红）----
+  place_green:  "61"   # 食品区(绿) 放置点 — zone 0
+  place_gray:   "62"   # 工具区(灰) 放置点 — zone 1
+  place_blue:   "63"   # 仪器区(蓝) 放置点 — zone 2
+  place_red:    "64"   # 药品区(红) 放置点 — zone 3

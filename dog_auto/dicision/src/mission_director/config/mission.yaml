@@ -1,0 +1,42 @@
+# ════════════════════════════════════════════════════════════════
+# mission_director 参数（v3.2 · 归位区编号 / 单趟 / 已移除微调）
+# 带 ⚠ 的项 = 上实机/联调前必须现场确认
+# ════════════════════════════════════════════════════════════════
+mission_director:
+  ros__parameters:
+    # ---- 串口 ----
+    serial_port: "/dev/ttyX5"           # ⚠ udev 绑定，固定名称
+    serial_baud: 115200
+
+    # ---- 归位区编号 → 名字（决定 place_<name> 路点）----
+    # 0=食品绿 1=工具灰 2=仪器蓝 3=药品红（图册图10 左→右）
+    zone_names: ["green", "gray", "blue", "red"]
+
+    # ---- 抓取顺序 ----
+    grab_first: "right"                # 每站先抓哪边 right/left
+
+    # ---- 时间/超时（秒）----
+    nav_timeout_sec: 30.0              # 单段导航超时
+    grab_timeout_sec: 60.0            # 单次抓取
+    place_timeout_sec: 60.0          # 单次放置
+    arm_timeout: 60.0                # 初始化/识别/扫描
+    nav_server_wait_sec: 180.0       # 启动等 navigate_to_pose 就绪(超时只告警不中止)
+
+    # ---- 重试/恢复 ----
+    nav_retry: 1
+    grab_retry: 1
+    place_retry: 1
+    max_recover: 3
+
+    # ---- 路点 / 导航 ----
+    waypoints_file: "~/.simple_nav_fsm_waypoints.yaml"  # 与 FSM 共用
+    strict_waypoints: false           # 当前打的是调试测试点位, 非最终点位 → 缺点只告警不拒跑
+
+    # ---- 触发 / 仿真 ----
+    auto_start: true                  # 起来即跑; false=等 ~/start 服务
+    start_delay: 2.0
+    dry_run: false                    # true=不开串口+导航仿真, 本机跑流程
+    dry_run_answer: 2                # 仿真: 答案(高分区编号 0-3)
+    dry_run_box_zones: [0, 2, 1, 3, 2, 1, 0, 3]  # 仿真: 8箱编号(back=前4个)
+    dry_run_step_sec: 0.3
+    dry_run_nav_sec: 0.5

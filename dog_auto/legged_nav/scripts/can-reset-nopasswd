@@ -1,0 +1,20 @@
+# /etc/sudoers.d/can-reset-nopasswd
+#
+# 允许用户 rc 免密码 sudo 跑 can-reset.sh —— 每次启动 trot_quad 自动调用，
+# 无人值守不能被 sudo 密码卡住。
+#
+# 装法（一次性，需要 sudo 密码）：
+#   sudo install -m 0440 /home/rc/Desktop/legged_control_lite/scripts/can-reset-nopasswd \
+#        /etc/sudoers.d/can-reset-nopasswd
+#
+# 验证：
+#   sudo -n /home/rc/Desktop/legged_control_lite/scripts/can-reset.sh
+#   （不应该提示密码）
+#
+# 卸载：
+#   sudo rm /etc/sudoers.d/can-reset-nopasswd
+#
+# 安全说明：只把"该脚本本身"的 sudo 设为免密，比"全部命令免密"安全得多。
+# 脚本内部已经写死操作清单（modprobe gs_usb + ip link + systemctl can-watchdog），
+# 攻击面就是改这个脚本 → 但脚本路径固定在仓库里，被改了 git diff 看得见。
+rc ALL=(ALL) NOPASSWD: /home/rc/Desktop/legged_control_lite/scripts/can-reset.sh

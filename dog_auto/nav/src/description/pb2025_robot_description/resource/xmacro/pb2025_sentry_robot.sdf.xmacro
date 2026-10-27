@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+
+    <!-- ============================================================
+         实车精简版 URDF（支持两种平台）：
+           - 哨兵小车: base_footprint -> chassis -> gimbal_yaw / front_mid360
+           - 四足机器狗: base_footprint -> front_mid360（直接挂, gimbal_yaw 闲置）
+         去掉了云台塔 / 装甲板 / 4 个麦轮 / 工业相机 / 灯条 / 测速模块
+         以及所有 Gazebo 插件——这些仅 Gazebo 仿真用，真车无关。
+         仿真不受影响：Gazebo 用的是 simulation_robot.sdf.xmacro。
+
+         ⚠️ 关键联动：base_footprint -> front_mid360 是 URDF 里唯一
+            参与定位运算的量。狗和小车共用此文件, 参数按平台实测值填。
+         ============================================================ -->
+
+    <!-- 仅需 MID360 定义（提供 front_mid360 link/joint；其 sensor 仅仿真用，转 URDF 时丢弃） -->
+    <xmacro_include uri="model://mid360/model.sdf.xmacro" />
+
+    <!-- ===== 狗实测尺寸: 70×35×30 cm ===== -->
+    <xmacro_define_value name="chassis_size_x" value="0.70" />
+    <xmacro_define_value name="chassis_size_y" value="0.35" />
+    <xmacro_define_value name="chassis_size_z" value="0.30" />
+    <!-- MID360 相对狗几何中心: 前13cm, 上6cm -->
+    <xmacro_define_value name="mid360_x" value="0.13" />
+    <xmacro_define_value name="mid360_y" value="0.0" />
+    <xmacro_define_value name="mid360_z" value="0.06" />
+    <!-- MID360: Y轴=出线方向=狗正前方. LiDAR原生X=狗右, Y=狗前.
+         URDF中front_mid360的X应指向狗前(=base_footprint +X), 故需yaw=-90°将LiDAR Y→URDF X.
+         实测若filtered_scan偏移90°, 尝试 yaw=0 / -1.5708 / 1.5708 三个值 -->
+    <xmacro_define_value name="mid360_roll" value="0.0" />
+    <xmacro_define_value name="mid360_pitch" value="0.0" />
+    <xmacro_define_value name="mid360_yaw" value="0.0" />
+
+    <!-- 模型名保持不变，避免影响其它引用 -->
+    <model name="pb2025_sentry_robot">
+
+        <pose>0 0 0 0 0 0</pose>
+
+        <!-- 根 link：机器人几何中心（狗=躯干内长宽高交点, 车=地面投影） -->
+        <link name="base_footprint"/>
+
+        <!-- base_footprint -> chassis：原点重合 -->
+        <joint name="base_to_chassis" type="fixed">
+            <pose>0 0 0 0 0 0</pose>
+            <parent>base_footprint</parent>
+            <child>chassis</child>
+        </joint>
+
+        <!-- 底盘本体：方盒，盒心在原点（狗=几何中心在躯干内部, 上下各半） -->
+        <link name="chassis">
+            <inertial>
+                <pose>0 0 0 0 0 0</pose>
+                <xmacro_block name="inertia_box" m="5.0" x="${chassis_size_x}" y="${chassis_size_y}" z="${chassis_size_z}"/>
+            </inertial>
+            <visual name="chassis_visual">
+                <pose>0 0 0 0 0 0</pose>
+                <xmacro_block name="geometry_box" x="${chassis_size_x}" y="${chassis_size_y}" z="${chassis_size_z}"/>
+            </visual>
+            <collision name="chassis_collision">
+                <pose>0 0 0 0 0 0</pose>
+                <xmacro_block name="geometry_box" x="${chassis_size_x}" y="${chassis_size_y}" z="${chassis_size_z}"/>
+            </collision>
+        </link>
+
+        <!-- MID360 → 直接挂 base_footprint: 前13cm上6cm, X轴=正前方, 无旋转 -->
+        <xmacro_block name="livox" prefix="front_" parent="base_footprint"
+            pose="${mid360_x} ${mid360_y} ${mid360_z} ${mid360_roll} ${mid360_pitch} ${mid360_yaw}"
+            update_rate="20" samples="1875"/>
+
+    </model>
+</sdf>

@@ -95,13 +95,17 @@ flowchart TD
 ## 5. 核心算法特性
 
 ### 5.1 VMC + WBC 全身动力学力控架构 (`legged/`)
-- **笛卡尔顺应性与全身解耦**：系统融合 **VMC（Virtual Model Control 虚拟模型控制）** 与 **WBC（Whole-Body Control 全身动力学控制）** 核心思想。电机底层固件增益置零（$K_p = 0$），将接触顺应性与机身姿态跟踪完全交由笛卡尔阻抗与全身任务分层模型管理；
+- **笛卡尔顺应性与全身解耦**：系统融合 **VMC（Virtual Model Control 虚拟模型控制）** 与 **WBC（Whole-Body Control 全身动力学控制）** 核心思想。电机底层固件增益置零（$`K_p = 0`$），将接触顺应性与机身姿态跟踪完全交由笛卡尔阻抗与全身任务分层模型管理；
 - **动力学任务映射公式**：
-  $$\boldsymbol{\tau}_{motor} = \boldsymbol{J}^T \cdot \left( \boldsymbol{F}_{imp} + \boldsymbol{F}_{body} \right) + \boldsymbol{\tau}_{grav} + \boldsymbol{\tau}_{sag}$$
-  - $\boldsymbol{F}_{imp}$：足端虚拟弹簧-阻尼阻抗力；
-  - $\boldsymbol{F}_{body}$：机身 6D 空间广义力 $\boldsymbol{W}_{des}$ 经闭式几何力分配解算的反力分摊；
-  - $\boldsymbol{\tau}_{grav} + \boldsymbol{\tau}_{sag}$：借鉴 WBC 任务优先级前馈思想，实现五连杆闭环连杆自重补偿与矢状面刚度下垂补偿；
-- **地面摩擦锥裁剪约束**：支撑腿地面接触力受限于严格的摩擦锥不等式约束（$F_z > 0, \sqrt{F_x^2 + F_y^2} \le \mu F_z$），从根源杜绝支撑打滑；
+
+$$
+\boldsymbol{\tau}_{\text{motor}} = \boldsymbol{J}^T \cdot \left( \boldsymbol{F}_{\text{imp}} + \boldsymbol{F}_{\text{body}} \right) + \boldsymbol{\tau}_{\text{grav}} + \boldsymbol{\tau}_{\text{sag}}
+$$
+
+  - $`\boldsymbol{F}_{\text{imp}}`$：足端虚拟弹簧-阻尼阻抗力；
+  - $`\boldsymbol{F}_{\text{body}}`$：机身 6D 空间广义力 $`\boldsymbol{W}_{\text{des}}`$ 经闭式几何力分配解算的反力分摊；
+  - $`\boldsymbol{\tau}_{\text{grav}} + \boldsymbol{\tau}_{\text{sag}}`$：借鉴 WBC 任务优先级前馈思想，实现五连杆闭环连杆自重补偿与矢状面刚度下垂补偿；
+- **地面摩擦锥裁剪约束**：支撑腿地面接触力受限于严格的摩擦锥不等式约束（$`F_z > 0, \;\; \sqrt{F_x^2 + F_y^2} \le \mu F_z`$），从根源杜绝支撑打滑；
 - **特技跳跃步态**：
   - `jump_stair_up()`：后腿爆发弹射、前腿收拢前探的高动态非对称轨迹，配合自动瞬时解冻 Pitch 姿态环自适应贴合台阶；
   - `jump_gravel()`：增大足端离地间隙的高爆发弹跳，适应松软碎石地形；
@@ -110,7 +114,7 @@ flowchart TD
 ### 5.2 激光惯导 SLAM 与任务决策 (`dog_auto/`)
 - **Point-LIO + small_gicp**：紧耦合 MID360 内置 IMU，提供 200Hz 激光里程计与极速全局重定位；
 - **同源栅格代价地图**：建图退出时截取高度带 `0.1m ~ 0.8m` 点云正交投影，自动生成与 PCD 天然对齐的 2D 代价栅格，无需人工对齐坐标系；
-- **确定性 FSM 任务教练**：以状态机为核心统筹全场作业（S0 初始化 $\rightarrow$ S1 数字识别 $\rightarrow$ S2 原料扫描 $\rightarrow$ S3/S4 左右抓取 $\rightarrow$ S5 分区分拣码垛 $\rightarrow$ 自主返航）。
+- **确定性 FSM 任务教练**：以状态机为核心统筹全场作业（S0 初始化 → S1 数字识别 → S2 原料扫描 → S3/S4 左右抓取 → S5 分区分拣码垛 → 自主返航）。
 
 ---
 
@@ -123,7 +127,7 @@ legged_control/
 ├── legged/                 # 障碍赛 500Hz 纯 VMC + WBC 运控工程 (C++17)
 │   ├── README.md           # [编译与快速运行指南](legged/README.md)
 │   ├── scripts/            # CAN 总线脚本 (setup-can.sh, can-watchdog.sh)
-│   └── src/parallel_vmc/   # RT 核心源码 (driver, kinematics, dynamics, planning, task)
+│   └── src/parallel/       # RT 核心源码 (driver, kinematics, dynamics, planning, task)
 └── dog_auto/               # 任务赛全自主系统 (ROS 2 Humble)
     ├── README.md           # [编译与快速发车指南](dog_auto/README.md)
     ├── nav/                # MID360 激光导航栈 (point_lio, small_gicp, nav2)
